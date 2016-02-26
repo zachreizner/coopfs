@@ -1,0 +1,23 @@
+sudo: false
+language: cpp
+addons:
+  apt:
+    sources:
+      - deadsnakes
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-5
+      - g++-5
+      - python3.5
+      - libzmq3-dev
+install:
+  - ln -s /usr/bin/python3.5 python3
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+  - curl -L https://github.com/jedisct1/libsodium/releases/download/1.0.8/libsodium-1.0.8.tar.gz | tar -xvz && cd libsodium-1.0.8 && ./configure --prefix=$HOME/usr && make -j2 && make install && cd $TRAVIS_BUILD_DIR
+  - curl -L https://github.com/ninja-build/ninja/releases/download/v1.6.0/ninja-linux.zip >ninja-linux.zip && unzip ninja-linux.zip
+  - curl -L https://github.com/mesonbuild/meson/releases/download/0.29.0/meson-0.29.0.tar.gz | tar -xvz
+before_script:
+  - export PKG_CONFIG_PATH=$HOME/usr/lib/pkgconfig
+  - export LD_LIBRARY_PATH=$HOME/usr/lib
+  - export PATH=$TRAVIS_BUILD_DIR:$PATH
+script: mkdir build && python3.5 meson-0.29.0/meson build && cd build && ../ninja test
