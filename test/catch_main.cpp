@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     if (ret)
         return ret;
 
-    session.run();
+    ret = session.run();
 
-    return 0;
+    return ret;
 }
